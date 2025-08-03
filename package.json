@@ -2,7 +2,7 @@
   "name": "fringebiscuit-tiktok-widget",
   "version": "1.0.0",
   "description": "Auto‑updating TikTok carousel widget for the Fringebiscuit theatre review blog.",
-  "type": "module",
+
   "scripts": {
     "dev": "vercel dev",
     "build": "echo 'Building for Vercel – there is no build step'",
