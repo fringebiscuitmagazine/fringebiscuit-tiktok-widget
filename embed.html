@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fringebiscuit TikTok Carousel</title>
+    <!-- Load React and ReactDOM from CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Load Babel so we can compile JSX in the browser for this embed.  In a production app you would precompile. -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+      /* Minimal styling for horizontal scroll snap */
+      .carousel-container {
+        overflow-x: auto;
+        display: flex;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+      }
+      .carousel-item {
+        scroll-snap-align: center;
+        flex: 0 0 100%;
+        padding: 1rem;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+      function TikTokCarouselEmbed({ apiUrl = '/api/tiktoks', maxVideos = 5 }) {
+        const [videos, setVideos] = useState([]);
+        useEffect(() => {
+          fetch(`${apiUrl}?count=${maxVideos}`)
+            .then((res) => res.json())
+            .then((data) => {
+              setVideos(Array.isArray(data.videos) ? data.videos : []);
+            })
+            .catch((err) => console.error(err));
+        }, [apiUrl, maxVideos]);
+        useEffect(() => {
+          const script = document.createElement('script');
+          script.src = 'https://www.tiktok.com/embed.js';
+          script.async = true;
+          document.body.appendChild(script);
+          return () => {
+            document.body.removeChild(script);
+          };
+        }, [videos]);
+        if (!videos.length) {
+          return React.createElement('div', null, 'Loading TikTok videos…');
+        }
+        return (
+          <div className="carousel-container">
+            {videos.map((video) => (
+              <div key={video.id} className="carousel-item">
+                <blockquote
+                  className="tiktok-embed"
+                  cite={video.url}
+                  data-video-id={video.id}
+                  style={{ width: '100%', minHeight: '600px' }}
+                ></blockquote>
+              </div>
+            ))}
+          </div>
+        );
+      }
+      ReactDOM.createRoot(document.getElementById('root')).render(<TikTokCarouselEmbed />);
+    </script>
+  </body>
+</html>
