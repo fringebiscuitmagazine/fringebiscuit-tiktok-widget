@@ -1,4 +1,6 @@
-import cheerio from 'cheerio';
+// Use CommonJS syntax instead of ESM to ensure Vercel's Node runtime
+// can properly load the module without requiring `type: module`.
+const cheerio = require('cheerio');
 
 /**
  * Vercel serverless function that scrapes the latest TikTok videos from a
@@ -9,7 +11,9 @@ import cheerio from 'cheerio';
  * If you deploy this function to Vercel, requests to `/api/tiktoks` will
  * return JSON in the form `{ videos: [{ id: string, url: string }] }`.
  */
-export default async function handler(req, res) {
+// Export the handler using CommonJS.  Vercel will execute this function
+// to handle requests to `/api/tiktoks`.
+module.exports = async (req, res) => {
   const username = req.query.user || 'fringebiscuit';
   const maxCount = parseInt(req.query.count || '5', 10);
   const url = `https://www.tiktok.com/@${username}`;
@@ -54,4 +58,4 @@ export default async function handler(req, res) {
     console.error('Error fetching TikTok videos:', err);
     return res.status(500).json({ error: 'Failed to fetch TikTok videos' });
   }
-}
+};
